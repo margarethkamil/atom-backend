@@ -43,7 +43,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Add root endpoint for Cloud Run health checks
+// Add root endpoint for Cloud Run health checks (CRITICAL)
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -56,15 +56,28 @@ app.get('/', (req, res) => {
  */
 app.use(errorMiddleware);
 
-// Start the server ONLY when running in development mode
-// For Cloud Functions, we don't want to call listen()
-if (process.env.NODE_ENV !== 'production') {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`⚡️ Server running in development mode at http://localhost:${port}`);
+// ALWAYS start the server to listen on the appropriate port
+// This is REQUIRED for Cloud Functions v2, as it needs 
+// an HTTP server listening on PORT (8080 by default)
+const port = process.env.PORT || 8080;
+const server = app.listen(port, () => {
+  console.log(`⚡️ Server is running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
+  
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🔍 Health check endpoint available at /`);
+    console.log(`🔍 API endpoints available at /api`);
+  } else {
     console.log(`📝 API endpoints available at http://localhost:${port}/api`);
-  });
-}
+  }
+});
 
-// Export the app for Cloud Functions
+// Handle graceful shutdown (important for Cloud Run)
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+});
+
+// Export the app for testing purposes
 export default app; 
