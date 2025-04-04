@@ -24,15 +24,23 @@ Backend API for the Atom Task Management Application.
 ## Project Structure
 
 ```
-src/
-├── controllers/     # Request handlers
-├── services/        # Business logic and data access
-├── models/          # Data models and interfaces
-├── routes/          # API routes
-├── middlewares/     # Authentication and validation
-├── config/          # Configuration files
-├── utils/           # Utility functions
-└── server.ts        # Application entry point
+├── src/
+│   ├── controllers/      # Request handlers (auth, task)
+│   ├── services/         # Business logic and data access
+│   ├── models/           # Data models (user, task)
+│   ├── routes/           # API routes (auth, task)
+│   ├── middlewares/      # Middleware (error, authentication)
+│   ├── config/           # Configuration files (Firebase)
+│   │   └── credentials/  # Firebase credentials (gitignored)
+│   ├── utils/            # Utility functions
+│   └── server.ts         # Application entry point
+├── functions/            # For Firebase Cloud Functions deployment
+├── public/               # Static files
+├── .env.example          # Environment variables template
+├── firebase.json         # Firebase configuration
+├── firestore.rules       # Firestore security rules
+├── package.json          # Dependencies and scripts
+└── tsconfig.json         # TypeScript configuration
 ```
 
 ## Getting Started
@@ -62,10 +70,62 @@ cp .env.example .env
 ```
 
 4. Set up Firebase:
-   - Create a Firebase project
-   - Set up Firestore
-   - Download service account key and save it securely
-   - Set GOOGLE_APPLICATION_CREDENTIALS in your `.env` file
+   - Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/)
+   - Set up Firestore database in your project
+   - Go to Project Settings > Service Accounts > Generate New Private Key
+   - Create the credentials directory and save the JSON file:
+   ```bash
+   mkdir -p src/config/credentials
+   # Move your downloaded JSON file to this directory
+   mv ~/Downloads/your-firebase-credentials.json src/config/credentials/app-credentials.json
+   ```
+   - Set GOOGLE_APPLICATION_CREDENTIALS in your `.env` file:
+   ```
+   GOOGLE_APPLICATION_CREDENTIALS=./src/config/credentials/app-credentials.json
+   ```
+   - Note: The credentials directory is already in .gitignore to prevent accidental commits
+
+### Testing the API
+
+1. Start the development server:
+```bash
+npm run dev
+```
+
+2. Test the API endpoints with a REST client like Postman, Insomnia, or curl:
+
+   - Check if the server is running:
+   ```bash
+   curl http://localhost:3000/health
+   ```
+
+   - Register a new user:
+   ```bash
+   curl -X POST http://localhost:3000/api/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{"email": "user@example.com", "password": "password123"}'
+   ```
+
+   - Login to get a JWT token:
+   ```bash
+   curl -X POST http://localhost:3000/api/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"email": "user@example.com", "password": "password123"}'
+   ```
+
+   - Create a task (use the token from login):
+   ```bash
+   curl -X POST http://localhost:3000/api/tasks \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -d '{"title": "Test Task", "description": "This is a test task", "priority": "medium"}'
+   ```
+
+   - Get all tasks:
+   ```bash
+   curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     http://localhost:3000/api/tasks
+   ```
 
 ### Development
 

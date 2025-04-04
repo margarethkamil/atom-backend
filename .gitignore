@@ -21,6 +21,7 @@ firestore-debug.log
 ui-debug.log
 .firebase/
 firebase-service-account.json
+src/config/credentials/app-credentials.json
 
 # IDE and editors
 .idea/
