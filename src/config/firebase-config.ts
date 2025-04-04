@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as dotenv from 'dotenv';
+import * as path from 'path';
 
 // Load environment variables
 dotenv.config();
@@ -11,14 +12,13 @@ dotenv.config();
 const initializeFirebase = (): admin.app.App => {
   // Check if Firebase is already initialized to prevent multiple initializations
   if (!admin.apps.length) {
-    // For production, use environment variables or service account file
-    // For local development, you can use service account credentials directly
     try {
+      // Best practice: Use applicationDefault which reads from GOOGLE_APPLICATION_CREDENTIALS
+      // This is the recommended approach by Firebase
       admin.initializeApp({
         credential: admin.credential.applicationDefault(),
-        // If you have a specific database URL, you can specify it here
-        // databaseURL: process.env.FIREBASE_DATABASE_URL,
       });
+      
       console.log('Firebase initialized successfully');
     } catch (error) {
       console.error('Error initializing Firebase:', error);

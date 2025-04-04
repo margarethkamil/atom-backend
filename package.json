@@ -14,10 +14,12 @@
   "license": "ISC",
   "description": "Backend API for atom task management application",
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
-    "firebase-admin": "^13.2.0"
+    "firebase-admin": "^13.2.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

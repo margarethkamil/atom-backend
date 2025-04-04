@@ -164,6 +164,28 @@ firebase init functions
 firebase deploy --only functions
 ```
 
+## Firestore Indexes
+
+This application requires the following Firestore indexes to function properly:
+
+### Composite Indexes
+
+| Collection | Fields                                    | Purpose                          |
+|------------|-------------------------------------------|----------------------------------|
+| tasks      | userId (Ascending), createdAt (Descending)| For listing tasks by user, sorted by creation date |
+
+To create the required indexes:
+
+1. Access your [Firebase Console](https://console.firebase.google.com/)
+2. Navigate to Firestore → Indexes
+3. Click "Add Index"
+4. Fill in the details as per the table above
+5. Click "Create"
+
+Alternatively, you can click the link in the error message when you first run a query that requires an index.
+
+Firestore automatically creates single-field indexes for all fields, so only composite indexes need to be manually created.
+
 ## Authentication
 
 The API uses JWT tokens for authentication. To access protected endpoints:
