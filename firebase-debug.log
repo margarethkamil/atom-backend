@@ -1,0 +1,140 @@
+[debug] [2025-04-04T19:09:56.749Z] ----------------------------------------------------------------------
+[debug] [2025-04-04T19:09:56.750Z] Command:       /Users/margarethortiz/.nvm/versions/node/v20.19.0/bin/node /Users/margarethortiz/.nvm/versions/node/v20.19.0/bin/firebase init
+[debug] [2025-04-04T19:09:56.750Z] CLI Version:   14.1.0
+[debug] [2025-04-04T19:09:56.750Z] Platform:      darwin
+[debug] [2025-04-04T19:09:56.751Z] Node Version:  v20.19.0
+[debug] [2025-04-04T19:09:56.751Z] Time:          Fri Apr 04 2025 14:09:56 GMT-0500 (Eastern Standard Time)
+[debug] [2025-04-04T19:09:56.751Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-04T19:09:56.753Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-04T19:09:56.753Z] > authorizing via signed-in user (margarethkamil@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/margarethortiz/Documents/Projects/atom-backend
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-04-04T19:10:13.116Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:13.117Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:13.118Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2025-04-04T19:10:13.607Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-04-04T19:10:13.607Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project atom-backend-396e7 (atom-backend) 
+[info] 
+=== Firestore Setup
+[debug] [2025-04-04T19:10:16.184Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:16.184Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:16.184Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/firestore.googleapis.com [none]
+[debug] [2025-04-04T19:10:16.184Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/firestore.googleapis.com x-goog-quota-user=projects/atom-backend-396e7
+[debug] [2025-04-04T19:10:16.794Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/firestore.googleapis.com 200
+[debug] [2025-04-04T19:10:16.794Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/firestore.googleapis.com [omitted]
+[debug] [2025-04-04T19:10:16.795Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:16.795Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:16.795Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default) [none]
+[debug] [2025-04-04T19:10:17.259Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default) 200
+[debug] [2025-04-04T19:10:17.259Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default) {"name":"projects/atom-backend-396e7/databases/(default)","uid":"b0db4b7c-e0e5-4065-8f9e-b639a13ee9a0","createTime":"2025-04-04T18:44:33.425718Z","updateTime":"2025-04-04T18:44:33.425718Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-04-04T18:44:33.425718Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"etag":"IN2Us5iKv4wDMNqwpsuJv4wD"}
+[debug] [2025-04-04T19:10:17.259Z] database_type: FIRESTORE_NATIVE
+[debug] [2025-04-04T19:10:17.259Z] database_type: FIRESTORE_NATIVE
+[debug] [2025-04-04T19:10:17.259Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-04T19:10:17.259Z] > authorizing via signed-in user (margarethkamil@gmail.com)
+[debug] [2025-04-04T19:10:17.259Z] [iam] checking project atom-backend-396e7 for permissions ["firebase.projects.get"]
+[debug] [2025-04-04T19:10:17.260Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:17.260Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:17.260Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions [none]
+[debug] [2025-04-04T19:10:17.260Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions x-goog-quota-user=projects/atom-backend-396e7
+[debug] [2025-04-04T19:10:17.260Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-04-04T19:10:17.567Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions 200
+[debug] [2025-04-04T19:10:17.568Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions {"permissions":["firebase.projects.get"]}
+[info] 
+[info] Firestore Security Rules allow you to define how and when to allow
+[info] requests. You can keep these rules in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2025-04-04T19:10:26.108Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:26.108Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:26.108Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/releases pageSize=10&pageToken=
+[debug] [2025-04-04T19:10:26.467Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/releases 200
+[debug] [2025-04-04T19:10:26.467Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/releases {"releases":[{"name":"projects/atom-backend-396e7/releases/cloud.firestore","rulesetName":"projects/atom-backend-396e7/rulesets/2ed43b60-5070-420d-b169-56b6532ce0b9","createTime":"2025-04-04T18:44:36.587Z","updateTime":"2025-04-04T18:44:36.587Z"}]}
+[debug] [2025-04-04T19:10:26.467Z] Found ruleset: projects/atom-backend-396e7/rulesets/2ed43b60-5070-420d-b169-56b6532ce0b9
+[debug] [2025-04-04T19:10:26.468Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:26.468Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:26.468Z] >>> [apiv2][query] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/rulesets/2ed43b60-5070-420d-b169-56b6532ce0b9 [none]
+[debug] [2025-04-04T19:10:26.662Z] <<< [apiv2][status] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/rulesets/2ed43b60-5070-420d-b169-56b6532ce0b9 200
+[debug] [2025-04-04T19:10:26.662Z] <<< [apiv2][body] GET https://firebaserules.googleapis.com/v1/projects/atom-backend-396e7/rulesets/2ed43b60-5070-420d-b169-56b6532ce0b9 [omitted]
+[info] 
+[info] Firestore indexes allow you to perform complex queries while
+[info] maintaining performance that scales with the size of the result
+[info] set. You can keep index definitions in your project directory
+[info] and publish them with firebase deploy.
+[info] 
+[debug] [2025-04-04T19:10:30.061Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.061Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.061Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.061Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.062Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/indexes [none]
+[debug] [2025-04-04T19:10:30.064Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* [none]
+[debug] [2025-04-04T19:10:30.613Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* 200
+[debug] [2025-04-04T19:10:30.614Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/fields?filter=indexConfig.usesAncestorConfig=false OR ttlConfig:* {"fields":[{"name":"projects/atom-backend-396e7/databases/(default)/collectionGroups/__default__/fields/*","indexConfig":{"indexes":[{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"ASCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","order":"DESCENDING"}],"state":"READY"},{"queryScope":"COLLECTION","fields":[{"fieldPath":"*","arrayConfig":"CONTAINS"}],"state":"READY"}]}}]}
+[debug] [2025-04-04T19:10:30.635Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/indexes 200
+[debug] [2025-04-04T19:10:30.635Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/atom-backend-396e7/databases/(default)/collectionGroups/-/indexes {}
+[info] 
+=== Functions Setup
+[debug] [2025-04-04T19:10:30.638Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-04T19:10:30.638Z] > authorizing via signed-in user (margarethkamil@gmail.com)
+[debug] [2025-04-04T19:10:30.638Z] [iam] checking project atom-backend-396e7 for permissions ["firebase.projects.get"]
+[debug] [2025-04-04T19:10:30.639Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.639Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.639Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions [none]
+[debug] [2025-04-04T19:10:30.640Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions x-goog-quota-user=projects/atom-backend-396e7
+[debug] [2025-04-04T19:10:30.640Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-04-04T19:10:30.939Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions 200
+[debug] [2025-04-04T19:10:30.940Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/atom-backend-396e7:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-04-04T19:10:30.941Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.941Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.942Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.942Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:10:30.942Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/cloudfunctions.googleapis.com [none]
+[debug] [2025-04-04T19:10:30.942Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/cloudfunctions.googleapis.com x-goog-quota-user=projects/atom-backend-396e7
+[debug] [2025-04-04T19:10:30.947Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/runtimeconfig.googleapis.com [none]
+[debug] [2025-04-04T19:10:30.948Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/runtimeconfig.googleapis.com x-goog-quota-user=projects/atom-backend-396e7
+[debug] [2025-04-04T19:10:31.436Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/cloudfunctions.googleapis.com 200
+[debug] [2025-04-04T19:10:31.436Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2025-04-04T19:10:31.437Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/runtimeconfig.googleapis.com 200
+[debug] [2025-04-04T19:10:31.437Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/atom-backend-396e7/services/runtimeconfig.googleapis.com [omitted]
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] ✔  Wrote functions/package.json 
+[info] ✔  Wrote functions/.eslintrc.js 
+[info] ✔  Wrote functions/index.js 
+[info] ✔  Wrote functions/.gitignore 
+[info] 
+=== Hosting Setup
+[debug] [2025-04-04T19:11:57.720Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:11:57.720Z] Checked if tokens are valid: true, expires at: 1743796259766
+[debug] [2025-04-04T19:11:57.720Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/atom-backend-396e7 [none]
+[debug] [2025-04-04T19:12:01.339Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/atom-backend-396e7 200
+[debug] [2025-04-04T19:12:01.340Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/atom-backend-396e7 {"projectId":"atom-backend-396e7","projectNumber":"793381630385","displayName":"atom-backend","name":"projects/atom-backend-396e7","resources":{"hostingSite":"atom-backend-396e7"},"state":"ACTIVE","etag":"1_10b4fa02-e068-41e9-89f0-7224f26a7c1d"}
+[info] 
+[info] Your public directory is the folder (relative to your project directory) that
+[info] will contain Hosting assets to be uploaded with firebase deploy. If you
+[info] have a build process for your assets, use your build's output directory.
+[info] 
