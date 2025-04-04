@@ -11,7 +11,6 @@ dotenv.config();
  * Initialize Express application
  */
 const app = express();
-const port = process.env.PORT || 3000;
 
 /**
  * Configure global middlewares
@@ -35,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', routes);
 
 /**
- * Basic health check endpoint
+ * TESTING ROUTE
  */
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -49,12 +48,13 @@ app.get('/health', (req, res) => {
  */
 app.use(errorMiddleware);
 
-/**
- * Start server
- */
-app.listen(port, () => {
-  console.log(`⚡️ Server is running at http://localhost:${port}`);
-  console.log(`📝 API endpoints available at http://localhost:${port}/api`);
-});
+// Only start the server when running directly (not when imported as a module by Firebase Functions)
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`⚡️ Server is running at http://localhost:${port}`);
+    console.log(`📝 API endpoints available at http://localhost:${port}/api`);
+  });
+}
 
 export default app; 
