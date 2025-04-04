@@ -56,13 +56,15 @@ app.get('/', (req, res) => {
  */
 app.use(errorMiddleware);
 
-// Always start the server to listen on the appropriate port
-// This is REQUIRED for Cloud Functions v2, which needs the app to be listening on PORT
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`⚡️ Server is running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
-  console.log(`📝 API endpoints available at http://localhost:${port}/api`);
-});
+// Start the server ONLY when running in development mode
+// For Cloud Functions, we don't want to call listen()
+if (process.env.NODE_ENV !== 'production') {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`⚡️ Server running in development mode at http://localhost:${port}`);
+    console.log(`📝 API endpoints available at http://localhost:${port}/api`);
+  });
+}
 
-// Export the app for testing purposes
+// Export the app for Cloud Functions
 export default app; 
