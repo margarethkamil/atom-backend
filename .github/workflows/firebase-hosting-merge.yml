@@ -29,7 +29,15 @@ jobs:
       - name: Install functions dependencies
         run: cd functions && npm ci
       
-      # Deploy hosting with Firebase Action
+      # Deploy functions FIRST (requires separate token)
+      - name: Setup for Functions Deploy
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions --force
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ATOM_BACKEND_396E7 }}
+      
+      # Deploy hosting with Firebase Action AFTER functions are deployed
       - name: Deploy Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -37,11 +45,3 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ATOM_BACKEND_396E7 }}
           channelId: live
           projectId: atom-backend-396e7
-      
-      # Deploy functions (requires separate token)
-      - name: Setup for Functions Deploy
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only functions --no-functions-linting
-        env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ATOM_BACKEND_396E7 }}
