@@ -43,26 +43,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Add root endpoint for Cloud Run health checks
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Atom Backend API is running'
+  });
+});
+
 /**
  * Global error handler middleware
  */
 app.use(errorMiddleware);
 
-// For development mode, start the server directly
-// For production (Cloud Functions v2), the server will be handled by the function
-if (process.env.NODE_ENV !== 'production') {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => {
-    console.log(`⚡️ Server is running at http://localhost:${port}`);
-    console.log(`📝 API endpoints available at http://localhost:${port}/api`);
-  });
-} else {
-  // This is necessary for Cloud Functions v2
-  // The container needs to listen on the port defined by the PORT environment variable
-  const port = process.env.PORT || 8080;
-  app.listen(port, () => {
-    console.log(`⚡️ Server is running on port ${port} in production mode`);
-  });
-}
+// Always start the server to listen on the appropriate port
+// This is REQUIRED for Cloud Functions v2, which needs the app to be listening on PORT
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`⚡️ Server is running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`📝 API endpoints available at http://localhost:${port}/api`);
+});
 
+// Export the app for testing purposes
 export default app; 
