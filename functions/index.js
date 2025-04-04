@@ -4,22 +4,21 @@
  * a Cloud Function
  */
 
-const {onRequest} = require("firebase-functions/v2/https");
+const { onRequest } = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
 // Set production environment for the app
 process.env.NODE_ENV = "production";
 
-// This path uses the directory structure from your project
-// It points to the compiled JavaScript file
-const app = require("../dist/server").default;
+// Import Express app
+const expressApp = require("../dist/server").default;
 
-// Export the Express API as a Cloud Function
+// Export the API as a Cloud Function v2
 exports.api = onRequest({
-  cors: true,
-  maxInstances: 10,
-  memory: "512MiB",
-  timeoutSeconds: 60,
-}, app);
+  region: "us-central1",
+  memory: "256MiB",  // Ajustar según necesidades
+  minInstances: 0,   // Sin instancias mínimas para reducir costos
+  maxInstances: 10   // Limitar instancias máximas
+}, expressApp);
 
-logger.info("Firebase Function initialized for Atom Backend");
+logger.info("Firebase Function v2 initialized for Atom Backend");

@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', routes);
 
 /**
- * TESTING ROUTE
+ * Basic health check endpoint
  */
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -48,12 +48,20 @@ app.get('/health', (req, res) => {
  */
 app.use(errorMiddleware);
 
-// Only start the server when running directly (not when imported as a module by Firebase Functions)
+// For development mode, start the server directly
+// For production (Cloud Functions v2), the server will be handled by the function
 if (process.env.NODE_ENV !== 'production') {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
     console.log(`⚡️ Server is running at http://localhost:${port}`);
     console.log(`📝 API endpoints available at http://localhost:${port}/api`);
+  });
+} else {
+  // This is necessary for Cloud Functions v2
+  // The container needs to listen on the port defined by the PORT environment variable
+  const port = process.env.PORT || 8080;
+  app.listen(port, () => {
+    console.log(`⚡️ Server is running on port ${port} in production mode`);
   });
 }
 
