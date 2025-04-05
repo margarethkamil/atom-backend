@@ -7,35 +7,32 @@ import { errorMiddleware } from './middlewares/error.middleware';
 // Load environment variables
 dotenv.config();
 
-/**
- * Initialize Express application
- */
+// Create Express application
 const app = express();
 
-/**
- * Configure global middlewares
- */
-// CORS configuration for communication with frontend
+// ==========================================
+// MIDDLEWARES
+// ==========================================
+
+// CORS configuration
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Parse JSON request bodies
+// Parse JSON and URL-encoded bodies
 app.use(express.json());
-
-// Parse URL-encoded request bodies
 app.use(express.urlencoded({ extended: true }));
 
-/**
- * Register API routes
- */
+// ==========================================
+// ROUTES
+// ==========================================
+
+// Register main API routes
 app.use('/api', routes);
 
-/**
- * Basic health check endpoint
- */
+// Basic health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -43,35 +40,34 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Add root endpoint for Cloud Run health checks (CRITICAL)
+// Root endpoint (CRITICAL for Cloud Run health checks)
 app.get('/', (req, res) => {
   res.status(200).json({
-    status: 'success',
+    status: 'success', 
     message: 'Atom Backend API is running'
   });
 });
 
-/**
- * Global error handler middleware
- */
+// Global error handler
 app.use(errorMiddleware);
 
-// ALWAYS start the server to listen on the appropriate port
-// This is REQUIRED for Cloud Functions v2, as it needs 
-// an HTTP server listening on PORT (8080 by default)
-const port = process.env.PORT || 8080;
+// ==========================================
+// START SERVER
+// ==========================================
+
+// ALWAYS use the PORT environment variable for Cloud Run compatibility
+const port = parseInt(process.env.PORT || '8080');
+
+console.log(`Starting server with PORT=${port} and NODE_ENV=${process.env.NODE_ENV || 'development'}`);
+
+// Start the server
 const server = app.listen(port, () => {
-  console.log(`⚡️ Server is running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
-  
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🔍 Health check endpoint available at /`);
-    console.log(`🔍 API endpoints available at /api`);
-  } else {
-    console.log(`📝 API endpoints available at http://localhost:${port}/api`);
-  }
+  console.log(`⚡️ Server is running on port ${port}`);
+  console.log(`📝 API is available at http://localhost:${port}/api`);
+  console.log(`🔍 Health check is available at http://localhost:${port}/health`);
 });
 
-// Handle graceful shutdown (important for Cloud Run)
+// Handle graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing HTTP server');
   server.close(() => {
@@ -79,5 +75,5 @@ process.on('SIGTERM', () => {
   });
 });
 
-// Export the app for testing purposes
+// Export app for testing
 export default app; 

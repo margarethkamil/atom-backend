@@ -1,33 +1,26 @@
 /**
  * Cloud Functions for Firebase - Atom Backend
- * V2 functions with Express - Direct approach
+ * V2 functions - Standalone Express Server approach
  */
 
-// Import functions v2 libraries
-const functions = require("firebase-functions/v2");
-const logger = functions.logger;
+// Simple logger for debugging
+const logger = require("firebase-functions/logger");
 
 // Set production environment for the app
 process.env.NODE_ENV = "production";
 
-// For v2, both approaches work:
-// 1. Import the module which will start the server itself
+// Log PORT environment variable
+logger.info(`PORT environment variable is set to: ${process.env.PORT}`);
+
+// Only require the server module - it will start listening on process.env.PORT
+// This is the ONLY thing needed for Cloud Run to detect the server
 require("../dist/server");
 
-// 2. Export a function that Cloud Run can use as an entry point
-// This function will be registered but not actually invoked
-// because the server is already handling requests
-exports.api = functions.https.onRequest({
-  region: "us-central1",
-  memory: "256MiB",
-  concurrency: 80,
-  minInstances: 0,
-  maxInstances: 10,
-  timeoutSeconds: 60
-}, (req, res) => {
-  // This is just a fallback and shouldn't be called
-  // The actual server is running on port 8080
-  res.status(200).send("API is running");
-});
+// Export a dummy function for Firebase to register this module
+// The actual server is the Express app listening on PORT
+exports.api = {
+  // This object is just for Firebase to recognize the module
+  // The real work is done by the Express server
+};
 
-logger.info("Firebase Function v2 initialized - Express server should be listening on PORT");
+logger.info("Firebase Function v2 initialized - Using standalone server approach");
