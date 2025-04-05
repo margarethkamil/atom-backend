@@ -1,28 +1,74 @@
 /**
  * Cloud Functions for Firebase - Atom Backend
- * Using the recommended simple approach for Express with Firebase Functions
+ * Simple Express implementation directly in index.js
  */
 
-// Import Firebase Functions
+// Firebase Functions SDK
 const functions = require("firebase-functions");
-const logger = functions.logger;
+const express = require("express");
+const cors = require("cors");
 
-// Set production environment
-process.env.NODE_ENV = "production";
+// Initialize Express app
+const app = express();
 
-// Import Express app without invoking listen()
-let expressApp;
-try {
-  logger.info("Importing Express app from ../dist/server");
-  expressApp = require("../dist/server").default;
-  logger.info("Successfully imported Express app");
-} catch (error) {
-  logger.error(`Failed to import Express app: ${error.message}`);
-  throw new Error(`Cannot import Express app: ${error.message}`);
-}
+// Set up middleware
+app.use(cors({ origin: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Export the API as a standard Cloud Function (v1 style)
-// This is the simplest and most reliable approach
-exports.api = functions.https.onRequest(expressApp);
+// Root route for health checks
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Atom Backend API is running",
+    timestamp: new Date().toISOString()
+  });
+});
 
-logger.info("Firebase Function initialized with Express integration");
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Server is healthy",
+    timestamp: new Date().toISOString()
+  });
+});
+
+// API root endpoint
+app.get("/api", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "API root endpoint",
+    endpoints: [
+      "/api",
+      "/api/users",
+      "/health",
+      "/"
+    ]
+  });
+});
+
+// Example API endpoint
+app.get("/api/users", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    data: [
+      { id: 1, name: "User 1" },
+      { id: 2, name: "User 2" },
+      { id: 3, name: "User 3" }
+    ]
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    status: "error",
+    message: "Internal server error",
+    error: err.message
+  });
+});
+
+// Export the Express app as a Cloud Function
+exports.api = functions.https.onRequest(app);
