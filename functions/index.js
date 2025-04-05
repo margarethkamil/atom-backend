@@ -136,5 +136,5 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Export the Express app as a Cloud Function
-exports.api = functions.https.onRequest(app);
+// Export the Express app as a Cloud Function with the name 'atom' instead of 'api'
+exports.atom = functions.https.onRequest(app);
