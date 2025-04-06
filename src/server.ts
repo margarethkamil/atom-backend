@@ -3,6 +3,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import routes from './routes';
 import { errorMiddleware } from './middlewares/error.middleware';
+import { apiKeyMiddleware } from './middlewares/apikey.middleware';
 
 // Load environment variables
 dotenv.config();
@@ -18,12 +19,15 @@ const app = express();
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
 }));
 
 // Parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Apply API key validation middleware
+app.use(apiKeyMiddleware);
 
 // ==========================================
 // ROUTES

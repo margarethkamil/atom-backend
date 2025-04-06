@@ -1,16 +1,22 @@
 import { Router } from 'express';
-import authRoutes from './auth.routes';
+import authRouter from './auth.routes';
 import taskRoutes from './task.routes';
+import { apiKeyMiddleware } from '../middlewares/apikey.middleware';
 
 /**
- * Main router that combines all route modules
+ * Main router that integrates all route modules
  */
 const router = Router();
 
-/**
- * Register all route modules with their respective prefixes
- */
-router.use('/auth', authRoutes);
+// Routes that don't require API key validation
+router.use('/auth', authRouter);
+
+// Task routes with API key validation
 router.use('/tasks', taskRoutes);
+
+// Apply API key validation to routes (already done at app level in server.ts)
+// Uncomment and create user routes when needed
+// import userRouter from './user.routes';
+// router.use('/users', apiKeyMiddleware, userRouter);
 
 export default router; 

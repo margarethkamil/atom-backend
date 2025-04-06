@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { validateBody, validators } from '../middlewares/validation.middleware';
-import { LoginUserDto, CreateUserDto } from '../models/user.model';
+import { LoginUserDto, CreateUserDto, GoogleAuthDto } from '../models/user.model';
 
-// Create router instance
-const router = Router();
+/**
+ * Router for authentication related endpoints
+ */
+export const authRouter = Router();
 const authController = new AuthController();
 
 /**
@@ -14,10 +16,10 @@ const authController = new AuthController();
 
 /**
  * @route   POST /auth/login
- * @desc    Login a user or redirect for registration
+ * @desc    Login a user
  * @access  Public
  */
-router.post(
+authRouter.post(
   '/login',
   validateBody<LoginUserDto>({
     email: validators.email
@@ -30,7 +32,7 @@ router.post(
  * @desc    Register a new user
  * @access  Public
  */
-router.post(
+authRouter.post(
   '/register',
   validateBody<CreateUserDto>({
     email: validators.email
@@ -38,4 +40,21 @@ router.post(
   authController.register
 );
 
-export default router; 
+/**
+ * @route   POST /auth/google
+ * @desc    Authenticate with Google (client-side flow)
+ * @access  Public
+ */
+authRouter.post(
+  '/google',
+  validateBody<GoogleAuthDto>({
+    idToken: validators.required('ID Token')
+  }),
+  authController.googleAuth
+);
+
+// Routes for server-side OAuth flow with Google
+authRouter.get('/google/init', authController.initiateGoogleAuth);
+authRouter.get('/google/callback', authController.handleGoogleCallback);
+
+export default authRouter; 

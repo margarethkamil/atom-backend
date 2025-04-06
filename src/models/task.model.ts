@@ -7,8 +7,12 @@ export interface Task {
   title: string;        // Task title
   description: string;  // Detailed description of the task
   completed: boolean;   // Task completion status
-  createdAt: Date;      // Timestamp of task creation
+  createdAt: any;       // Timestamp of task creation
+  updatedAt?: any;      // Timestamp of last update
   userId: string;       // Reference to the user who owns this task
+  priority?: string;    // Task priority: 'low', 'medium', 'high'
+  dueDate?: any;        // Due date for the task
+  tags?: string[];      // Array of tags associated with the task
 }
 
 /**
@@ -17,6 +21,9 @@ export interface Task {
 export interface CreateTaskDto {
   title: string;
   description: string;
+  priority?: string;
+  dueDate?: string | Date;
+  tags?: string[];
 }
 
 /**
@@ -26,4 +33,7 @@ export interface UpdateTaskDto {
   title?: string;
   description?: string;
   completed?: boolean;
+  priority?: string;
+  dueDate?: string | Date;
+  tags?: string[];
 } 

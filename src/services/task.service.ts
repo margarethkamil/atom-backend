@@ -1,5 +1,6 @@
 import { db } from '../config/firebase-config';
 import { Task, CreateTaskDto, UpdateTaskDto } from '../models/task.model';
+import { firestore } from 'firebase-admin';
 
 /**
  * Service responsible for task-related operations
@@ -21,11 +22,21 @@ export class TaskService {
         .orderBy('createdAt', 'desc')
         .get();
 
-      return tasksSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt.toDate()
-      } as Task));
+      return tasksSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          description: data.description,
+          completed: data.completed,
+          userId: data.userId,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : data.createdAt,
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : data.updatedAt,
+          priority: data.priority,
+          dueDate: data.dueDate?.toDate ? data.dueDate.toDate() : data.dueDate,
+          tags: data.tags || []
+        } as Task;
+      });
     } catch (error) {
       console.error('Error getting tasks:', error);
       throw new Error('Failed to retrieve tasks');
@@ -59,7 +70,11 @@ export class TaskService {
         description: taskData.description,
         completed: taskData.completed,
         userId: taskData.userId,
-        createdAt: taskData.createdAt.toDate()
+        createdAt: taskData.createdAt?.toDate ? taskData.createdAt.toDate() : taskData.createdAt,
+        updatedAt: taskData.updatedAt?.toDate ? taskData.updatedAt.toDate() : taskData.updatedAt,
+        priority: taskData.priority,
+        dueDate: taskData.dueDate?.toDate ? taskData.dueDate.toDate() : taskData.dueDate,
+        tags: taskData.tags || []
       };
     } catch (error) {
       console.error('Error getting task by ID:', error);
@@ -75,19 +90,40 @@ export class TaskService {
    */
   async createTask(taskData: CreateTaskDto, userId: string): Promise<Task> {
     try {
+      // Process dueDate if provided
+      let dueDate = null;
+      if (taskData.dueDate) {
+        // If dueDate is a string, convert to Date object
+        dueDate = typeof taskData.dueDate === 'string' 
+          ? new Date(taskData.dueDate) 
+          : taskData.dueDate;
+      }
+
+      // Process tags - ensure it's an array
+      const tags = Array.isArray(taskData.tags) ? taskData.tags : [];
+
+      // Create the new task object
       const newTask: Task = {
         title: taskData.title,
         description: taskData.description,
         completed: false,
-        createdAt: new Date(),
-        userId
+        createdAt: firestore.Timestamp.now(),
+        updatedAt: firestore.Timestamp.now(),
+        userId,
+        priority: taskData.priority || 'medium', // Default to medium priority
+        dueDate: dueDate ? firestore.Timestamp.fromDate(dueDate) : null,
+        tags
       };
 
       const docRef = await db.collection(this.taskCollection).add(newTask);
       
+      // Convert Firestore Timestamps back to Date objects for the response
       return {
         id: docRef.id,
-        ...newTask
+        ...newTask,
+        createdAt: newTask.createdAt.toDate(),
+        updatedAt: newTask.updatedAt.toDate(),
+        dueDate: newTask.dueDate ? newTask.dueDate.toDate() : null
       };
     } catch (error) {
       console.error('Error creating task:', error);
@@ -112,20 +148,44 @@ export class TaskService {
       }
 
       // Create the update data object
-      const updateData: Partial<Task> = {};
+      const updateData: Partial<Task> = {
+        updatedAt: firestore.Timestamp.now()
+      };
       
+      // Update basic fields if provided
       if (taskData.title !== undefined) updateData.title = taskData.title;
       if (taskData.description !== undefined) updateData.description = taskData.description;
       if (taskData.completed !== undefined) updateData.completed = taskData.completed;
+      if (taskData.priority !== undefined) updateData.priority = taskData.priority;
+      
+      // Process dueDate if provided
+      if (taskData.dueDate !== undefined) {
+        if (taskData.dueDate === null) {
+          updateData.dueDate = null;
+        } else {
+          // Convert string to Date if needed
+          const dueDate = typeof taskData.dueDate === 'string' 
+            ? new Date(taskData.dueDate) 
+            : taskData.dueDate;
+          updateData.dueDate = firestore.Timestamp.fromDate(dueDate);
+        }
+      }
+      
+      // Process tags if provided
+      if (taskData.tags !== undefined) {
+        updateData.tags = Array.isArray(taskData.tags) ? taskData.tags : [];
+      }
 
       // Update the task in Firestore
       await db.collection(this.taskCollection).doc(taskId).update(updateData);
       
-      // Return the updated task
-      return {
-        ...existingTask,
-        ...updateData
-      };
+      // Get the updated task to return
+      const updatedTask = await this.getTaskById(taskId, userId);
+      if (!updatedTask) {
+        throw new Error('Failed to retrieve updated task');
+      }
+      
+      return updatedTask;
     } catch (error) {
       console.error('Error updating task:', error);
       throw new Error('Failed to update task');
@@ -136,7 +196,6 @@ export class TaskService {
    * Delete a task
    * @param taskId - The ID of the task to delete
    * @param userId - The ID of the user who owns the task
-   * @returns A Promise that resolves when the task is deleted
    */
   async deleteTask(taskId: string, userId: string): Promise<void> {
     try {
@@ -147,7 +206,7 @@ export class TaskService {
         throw new Error('Task not found or unauthorized access');
       }
 
-      // Delete the task
+      // Delete the task from Firestore
       await db.collection(this.taskCollection).doc(taskId).delete();
     } catch (error) {
       console.error('Error deleting task:', error);

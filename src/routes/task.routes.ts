@@ -39,6 +39,8 @@ router.post(
   validateBody<CreateTaskDto>({
     title: validators.required('Title'),
     description: validators.required('Description')
+    // Priority, dueDate, and tags are optional so we don't validate them explicitly
+    // The middleware will allow any fields defined in the DTO
   }),
   taskController.createTask
 );
