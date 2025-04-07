@@ -4,6 +4,10 @@
 
 Backend API for the Atom Task Management Application built with Firebase Cloud Functions and Express.js.
 
+## CI/CD
+
+This project implements continuous integration and continuous deployment (CI/CD) using GitHub Actions.
+
 ## Features
 
 - RESTful API built with Express.js and TypeScript
