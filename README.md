@@ -1,25 +1,36 @@
 # Atom Backend
 
-Backend API for the Atom Task Management Application.
+Backend API for the Atom Task Management Application built with Firebase Cloud Functions and Express.js.
 
 ## Features
 
 - RESTful API built with Express.js and TypeScript
+- Deployed as Firebase Cloud Functions (v2)
 - Firebase Firestore for data storage
-- JWT-based authentication
+- Multiple authentication methods:
+  - JWT-based authentication
+  - Google OAuth integration
+- API Key validation for secure client-server communication
+- CORS protection with whitelisted origins
+- Error handling middleware
+- Structured logging
 - SOLID principles and Clean Architecture
 
 ## API Endpoints
 
-| Method | Endpoint         | Description                    | Authentication |
-|--------|------------------|--------------------------------|----------------|
-| POST   | /api/auth/login   | Login user                     | Public         |
-| POST   | /api/auth/register| Register new user              | Public         |
-| GET    | /api/tasks        | Get all tasks                  | Required       |
-| POST   | /api/tasks        | Create a new task              | Required       |
-| GET    | /api/tasks/:id    | Get a specific task            | Required       |
-| PUT    | /api/tasks/:id    | Update a task                  | Required       |
-| DELETE | /api/tasks/:id    | Delete a task                  | Required       |
+| Method | Endpoint               | Description                          | Authentication |
+|--------|------------------------|--------------------------------------|----------------|
+| POST   | /api/auth/login        | Login with email                     | Public         |
+| POST   | /api/auth/register     | Register new user                    | Public         |
+| POST   | /api/auth/google       | Authenticate with Google ID token    | Public         |
+| GET    | /api/auth/google/init  | Initiate server-side Google OAuth    | Public         |
+| GET    | /api/auth/google/callback | Handle Google OAuth callback      | Public         |
+| GET    | /api/tasks             | Get all tasks                        | Required       |
+| POST   | /api/tasks             | Create a new task                    | Required       |
+| GET    | /api/tasks/:id         | Get a specific task                  | Required       |
+| PUT    | /api/tasks/:id         | Update a task                        | Required       |
+| DELETE | /api/tasks/:id         | Delete a task                        | Required       |
+| GET    | /health                | Service health check                 | Public         |
 
 ## Project Structure
 
@@ -28,13 +39,16 @@ Backend API for the Atom Task Management Application.
 │   ├── controllers/      # Request handlers (auth, task)
 │   ├── services/         # Business logic and data access
 │   ├── models/           # Data models (user, task)
-│   ├── routes/           # API routes (auth, task)
-│   ├── middlewares/      # Middleware (error, authentication)
+│   ├── routes/           # API routes definition
+│   ├── middlewares/      # Middleware (error, auth, validation, apikey)
 │   ├── config/           # Configuration files (Firebase)
 │   │   └── credentials/  # Firebase credentials (gitignored)
 │   ├── utils/            # Utility functions
 │   └── server.ts         # Application entry point
-├── functions/            # For Firebase Cloud Functions deployment
+├── functions/            # Firebase Cloud Functions configuration
+│   ├── index.js          # Cloud Functions entry point
+│   └── package.json      # Functions-specific dependencies
+├── dist/                 # Compiled TypeScript output
 ├── public/               # Static files
 ├── .env.example          # Environment variables template
 ├── firebase.json         # Firebase configuration
@@ -43,11 +57,52 @@ Backend API for the Atom Task Management Application.
 └── tsconfig.json         # TypeScript configuration
 ```
 
+## Architecture
+
+The application follows a clean, layered architecture:
+
+- **Controllers**: Handle HTTP requests and responses
+- **Services**: Implement business logic and interact with data layer
+- **Models**: Define data structures
+- **Middlewares**: Process requests before they reach route handlers
+- **Routes**: Define API endpoints and their handlers
+- **Utils**: Provide helper functions across the application
+
+## Cloud Functions Deployment
+
+The backend is deployed as a Firebase Cloud Function (v2) with the following configuration:
+
+- **Function Name**: atom
+- **Region**: us-central1
+- **Runtime**: Node.js 20
+- **Memory**: Default (256MB)
+- **Timeout**: Default (60s)
+- **Entry Point**: Express.js application
+
+The setup includes a middleware that handles the `/atom` URL prefix automatically, allowing both direct API URL access and Cloud Functions URL format to work seamlessly.
+
+## Authentication System
+
+### Email Authentication
+Users can register and login with their email address. The system generates JWT tokens for session management.
+
+### Google Authentication
+Two methods of Google authentication are supported:
+
+1. **Client-side flow**: Frontend obtains a Google ID token and sends it to `/api/auth/google` for verification
+2. **Server-side flow**: Backend initiates OAuth flow via `/api/auth/google/init` and handles the callback
+
+### API Key Security
+The system implements API key validation with two modes:
+
+1. **Auto-injection**: Trusted origins (frontend URLs) automatically receive API keys
+2. **Manual validation**: External requests (like Postman) must provide valid API keys in headers
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v14 or later)
+- Node.js (v20 or later recommended)
 - npm or yarn
 - Firebase project with Firestore
 
@@ -72,6 +127,7 @@ cp .env.example .env
 4. Set up Firebase:
    - Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/)
    - Set up Firestore database in your project
+   - Enable Google Authentication in Firebase Authentication section
    - Go to Project Settings > Service Accounts > Generate New Private Key
    - Create the credentials directory and save the JSON file:
    ```bash
@@ -83,48 +139,12 @@ cp .env.example .env
    ```
    GOOGLE_APPLICATION_CREDENTIALS=./src/config/credentials/app-credentials.json
    ```
-   - Note: The credentials directory is already in .gitignore to prevent accidental commits
 
-### Testing the API
-
-1. Start the development server:
-```bash
-npm run dev
-```
-
-2. Test the API endpoints with a REST client like Postman, Insomnia, or curl:
-
-   - Check if the server is running:
+5. Configure API Keys:
+   - For local development, set DEFAULT_API_KEY in your .env file
+   - For production, configure API keys in the Cloud Run service:
    ```bash
-   curl http://localhost:3000/health
-   ```
-
-   - Register a new user:
-   ```bash
-   curl -X POST http://localhost:3000/api/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "password123"}'
-   ```
-
-   - Login to get a JWT token:
-   ```bash
-   curl -X POST http://localhost:3000/api/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "password123"}'
-   ```
-
-   - Create a task (use the token from login):
-   ```bash
-   curl -X POST http://localhost:3000/api/tasks \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     -d '{"title": "Test Task", "description": "This is a test task", "priority": "medium"}'
-   ```
-
-   - Get all tasks:
-   ```bash
-   curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-     http://localhost:3000/api/tasks
+   gcloud run services update atom --set-env-vars DEFAULT_API_KEY="your-api-key" --region=us-central1
    ```
 
 ### Development
@@ -153,48 +173,75 @@ npm start
 npm install -g firebase-tools
 ```
 
-2. Initialize Firebase:
+2. Login to Firebase:
 ```bash
 firebase login
-firebase init functions
 ```
 
-3. Deploy to Firebase:
+3. Build and deploy:
 ```bash
+npm run build
+cd functions
 firebase deploy --only functions
 ```
 
-## Firestore Indexes
-
-This application requires the following Firestore indexes to function properly:
-
-### Composite Indexes
-
-| Collection | Fields                                    | Purpose                          |
-|------------|-------------------------------------------|----------------------------------|
-| tasks      | userId (Ascending), createdAt (Descending)| For listing tasks by user, sorted by creation date |
-
-To create the required indexes:
-
-1. Access your [Firebase Console](https://console.firebase.google.com/)
-2. Navigate to Firestore → Indexes
-3. Click "Add Index"
-4. Fill in the details as per the table above
-5. Click "Create"
-
-Alternatively, you can click the link in the error message when you first run a query that requires an index.
-
-Firestore automatically creates single-field indexes for all fields, so only composite indexes need to be manually created.
-
-## Authentication
-
-The API uses JWT tokens for authentication. To access protected endpoints:
-
-1. Login with your email to get a token
-2. Add the token to your request headers:
+After deployment, your API will be available at:
 ```
-Authorization: Bearer <your-token>
+https://atom-dqytahs6oq-uc.a.run.app
 ```
 
-# Created by Margareth Ortiz 
-# 04-03-2025
+## Environment Variables
+
+The following environment variables are required:
+
+| Variable                      | Description                               | Required for                 |
+|-------------------------------|-------------------------------------------|------------------------------|
+| GOOGLE_APPLICATION_CREDENTIALS| Path to Firebase credentials JSON file    | Local development            |
+| DEFAULT_API_KEY               | Default API key for validation            | Production & development     |
+| FIREBASE_PROJECT_ID           | Firebase project ID                       | Development & production     |
+| GOOGLE_CLIENT_ID              | Google OAuth client ID                    | Google Authentication        |
+| GOOGLE_CLIENT_SECRET          | Google OAuth client secret                | Google Authentication        |
+| JWT_SECRET                    | Secret for JWT token generation           | Authentication system        |
+| CORS_ORIGIN                   | Allowed origins for CORS                  | Cross-origin requests        |
+
+## Firestore Data Model
+
+### Users Collection
+```
+users/{userId}
+  - id: string
+  - email: string
+  - displayName: string (optional)
+  - photoURL: string (optional)
+  - authType: 'email' | 'google'
+  - googleId: string (for Google auth only)
+  - createdAt: timestamp
+  - updatedAt: timestamp
+  - lastLogin: timestamp
+  - isActive: boolean
+```
+
+### Tasks Collection
+```
+tasks/{taskId}
+  - id: string
+  - userId: string (reference to user)
+  - title: string
+  - description: string
+  - priority: 'low' | 'medium' | 'high'
+  - status: 'pending' | 'in-progress' | 'completed'
+  - dueDate: timestamp (optional)
+  - tags: string[] (optional)
+  - createdAt: timestamp
+  - updatedAt: timestamp
+```
+
+## Security
+
+- All API routes (except public ones) require authentication
+- Firestore security rules ensure users can only access their own data
+- Environment variables protect sensitive information
+- API Key validation secures backend access
+
+- Created by Margareth Ortiz
+- 04-07-2025
