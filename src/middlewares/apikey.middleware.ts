@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import * as functions from 'firebase-functions';
 import { ApiError } from './error.middleware';
 
 /**
@@ -20,6 +19,7 @@ export const apiKeyMiddleware = async (
   try {
     // Step 1: Get the origin
     const origin = req.get('origin') || req.get('referer');
+    console.log('Request origin:', origin);
     
     // List of allowed origins that receive auto-injected API key
     const allowedOrigins = [
@@ -29,32 +29,34 @@ export const apiKeyMiddleware = async (
     
     // Check if request is coming from allowed origin
     const isAllowedOrigin = allowedOrigins.some(allowed => origin?.startsWith(allowed));
+    console.log('Is allowed origin:', isAllowedOrigin);
     
-    // Get valid API keys from Firebase Config
+    // Get valid API keys from environment variables (Cloud Functions v2 approach)
     const configApiKeys: string[] = [];
     
-    // Default key for local development
+    // Default key for production environment
     const defaultKey = process.env.DEFAULT_API_KEY || "";
     
-    try {
-      // Check if Firebase configuration exists
-      const apiConfig = functions.config().api || {};
-      
-      // Extract all keys from the configuration
-      Object.keys(apiConfig).forEach(keyName => {
-        if (keyName.startsWith('key')) {
-          configApiKeys.push(apiConfig[keyName]);
-        }
-      });
-      
-    } catch (configError) {
-      console.warn("Error reading config, using default key:", configError);
-    }
+    // Read API keys from environment variables
+    const envKey1 = process.env.API_KEY_1 || "";
+    const envKey2 = process.env.API_KEY_2 || "";
     
-    // If no keys in config or we're in local environment, use default key
-    if (configApiKeys.length === 0 && defaultKey) {
-      configApiKeys.push(defaultKey);
-    }
+    // Add valid keys to the list
+    if (defaultKey) configApiKeys.push(defaultKey);
+    if (envKey1) configApiKeys.push(envKey1);
+    if (envKey2) configApiKeys.push(envKey2);
+    
+    console.log('Environment variables present:',
+      {
+        DEFAULT_API_KEY: !!process.env.DEFAULT_API_KEY,
+        API_KEY_1: !!process.env.API_KEY_1,
+        API_KEY_2: !!process.env.API_KEY_2,
+        NODE_ENV: process.env.NODE_ENV
+      }
+    );
+    
+    // Log the number of available API keys
+    console.log(`Available API keys: ${configApiKeys.length}`);
     
     // Step 2: Handle based on origin
     if (isAllowedOrigin) {
@@ -66,7 +68,7 @@ export const apiKeyMiddleware = async (
         req.headers['x-api-key'] = configApiKeys[0];
         return next();
       } else {
-        return next(new ApiError(500, 'No API keys configured'));
+        return next(new ApiError(500, 'No API keys configured - please set DEFAULT_API_KEY environment variable'));
       }
     } else {
       // MANUAL API KEY CHECK for non-trusted origins (Postman, tests)

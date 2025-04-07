@@ -75,8 +75,24 @@ try {
   });
 }
 
+// Crear un middleware para manejar el prefijo /atom
+const handleAtomPrefixMiddleware = (req, res, next) => {
+  console.log('Original URL:', req.url);
+  
+  // Si la URL comienza con /atom, elimina ese prefijo
+  if (req.url.startsWith('/atom')) {
+    req.url = req.url.substring(5); // Quita '/atom'
+    console.log('Modified URL:', req.url);
+  }
+  
+  next();
+};
+
 // Export the Express app as a Cloud Function with the name 'atom'
 exports.atom = functions.https.onRequest((req, res) => {
-  // Ensure proper handling of the request
-  return app(req, res);
+  // Aplicar el middleware de manejo de prefijos antes de pasar a la app
+  handleAtomPrefixMiddleware(req, res, () => {
+    // Luego pasar la solicitud a la app Express
+    return app(req, res);
+  });
 });
