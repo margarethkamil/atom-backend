@@ -1,3 +1,5 @@
+📄 También disponible en: [Español](README_es.md)
+
 # Atom Backend
 
 Backend API for the Atom Task Management Application built with Firebase Cloud Functions and Express.js.
@@ -243,5 +245,5 @@ tasks/{taskId}
 - Environment variables protect sensitive information
 - API Key validation secures backend access
 
-- Created by Margareth Ortiz
-- 04-07-2025
+<sub>Created by Margareth Ortiz</sub>
+<sub>07-04-2025</sub> 
