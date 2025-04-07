@@ -25,9 +25,25 @@ jobs:
       - name: Build project
         run: npm run build
       
+      # Debug: List directories
+      - name: Debug - List directories
+        run: |
+          echo "Current directory structure:"
+          ls -la
+          echo "Contents of dist folder:"
+          ls -la dist || echo "dist folder not found"
+      
       # Install dependencies for functions
       - name: Install functions dependencies
         run: cd functions && npm ci
+      
+      # Copy dist folder to functions directory
+      - name: Copy dist to functions
+        run: |
+          mkdir -p functions/dist
+          cp -r dist/* functions/dist/
+          echo "Contents of functions/dist after copy:"
+          ls -la functions/dist || echo "functions/dist folder not found"
       
       # Deploy functions FIRST (requires separate token)
       - name: Setup for Functions Deploy
@@ -36,6 +52,7 @@ jobs:
           args: deploy --only functions --force
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ATOM_BACKEND_396E7 }}
+          PROJECT_PATH: .
       
       # Deploy hosting with Firebase Action AFTER functions are deployed
       - name: Deploy Hosting
