@@ -17,7 +17,7 @@ try {
   process.env.FUNCTION_NAME = 'atom';
   process.env.NODE_ENV = 'production';
   
-  // Debug: Check if dist/server.js exists
+  // Debug: Check if dist/server.js exists - buscando en el subdirectorio local
   const serverJsPath = path.join(__dirname, 'dist', 'server.js');
   const exists = fs.existsSync(serverJsPath);
   console.log(`Checking if ${serverJsPath} exists: ${exists}`);
