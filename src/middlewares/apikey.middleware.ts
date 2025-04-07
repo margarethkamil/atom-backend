@@ -24,7 +24,7 @@ export const apiKeyMiddleware = async (
     // List of allowed origins that receive auto-injected API key
     const allowedOrigins = [
       'http://localhost:4200',  // Development
-      'https://atom-frontend.web.app/'  // Production
+      'https://atom-frontend.web.app'  // Production - Eliminado el slash final
     ];
     
     // Check if request is coming from allowed origin
