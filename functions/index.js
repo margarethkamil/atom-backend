@@ -24,22 +24,23 @@ app.use((req, res, next) => {
   }
   
   try {
-    // Get API key from request header or query param
-    const apiKey = req.headers['x-api-key'] || req.query.api_key;
+    // Step 1: Get the origin
+    const origin = req.get('origin') || req.get('referer');
     
-    if (!apiKey) {
-      return res.status(403).json({
-        status: "error",
-        message: "Acceso denegado: API Key no proporcionada"
-      });
-    }
+    // List of allowed origins that receive auto-injected API key
+    const allowedOrigins = [
+      'http://localhost:4200',  // Development
+      'https://atom-frontend.web.app'  // Production
+    ];
+    
+    // Check if request is coming from allowed origin
+    const isAllowedOrigin = allowedOrigins.some(allowed => origin?.startsWith(allowed));
     
     // Get all valid API keys from Firebase Config
-    // This reads from values set with: firebase functions:config:set api.key1="value" api.key2="value2"
     const configApiKeys = [];
     
     // Default key for local development
-    const defaultKey = "MTEwMz-atom-v1";
+    const defaultKey = process.env.DEFAULT_API_KEY || "MTEwMz-atom-v1";
     
     try {
       // Check if Firebase Config is available
@@ -58,21 +59,52 @@ app.use((req, res, next) => {
     }
     
     // If no keys in config or running locally, use default key
-    if (configApiKeys.length === 0) {
+    if (configApiKeys.length === 0 && defaultKey) {
       configApiKeys.push(defaultKey);
     }
     
-    // Check if provided API key matches any valid key
-    const isValidKey = configApiKeys.includes(apiKey);
-    
-    if (!isValidKey) {
-      return res.status(403).json({
-        status: "error",
-        message: "Acceso denegado: API Key inválida"
-      });
+    // Step 2: Handle based on origin
+    if (isAllowedOrigin) {
+      // AUTO-INJECT API KEY for trusted origins (frontend)
+      console.log('Trusted origin detected, auto-injecting API key');
+      
+      // Use the first valid key
+      if (configApiKeys.length > 0) {
+        req.headers['x-api-key'] = configApiKeys[0];
+        return next();
+      } else {
+        return res.status(500).json({
+          status: "error",
+          message: "No API keys configured"
+        });
+      }
+    } else {
+      // MANUAL API KEY CHECK for non-trusted origins (Postman, tests)
+      console.log('Non-trusted origin, checking for manual API key');
+      
+      // Get API key from request header or query param
+      const apiKey = req.headers['x-api-key'] || req.query.api_key;
+      
+      if (!apiKey) {
+        return res.status(403).json({
+          status: "error",
+          message: "Acceso denegado: API Key no proporcionada"
+        });
+      }
+      
+      // Check if provided API key matches any valid key
+      const isValidKey = configApiKeys.includes(apiKey);
+      
+      if (!isValidKey) {
+        return res.status(403).json({
+          status: "error",
+          message: "Acceso denegado: API Key inválida"
+        });
+      }
+      
+      // Valid API key provided, allow the request
+      return next();
     }
-    
-    next();
   } catch (error) {
     console.error("Error verifying API key:", error);
     return res.status(500).json({
@@ -121,7 +153,7 @@ app.get("/api/users", (req, res) => {
     data: [
       { id: 1, name: "User 1" },
       { id: 2, name: "User 2" },
-      { id: 3, name: "User 3" }
+      { id: 3, name: "User 3" },
     ]
   });
 });
@@ -132,7 +164,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     status: "error",
     message: "Internal server error",
-    error: err.message
+    error: err.message,
   });
 });
 
