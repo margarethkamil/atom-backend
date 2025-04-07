@@ -56,28 +56,32 @@ app.get('/', (req, res) => {
 app.use(errorMiddleware);
 
 // ==========================================
-// START SERVER
+// START SERVER ONLY IF NOT IN FIREBASE FUNCTIONS
 // ==========================================
 
-// ALWAYS use the PORT environment variable for Cloud Run compatibility
-const port = parseInt(process.env.PORT || '8080');
+// Check if this is being run directly (not imported by Firebase Functions)
+// process.env.FUNCTION_NAME is set in Firebase Functions environment
+if (!process.env.FUNCTION_NAME && process.env.NODE_ENV !== 'test') {
+  // ALWAYS use the PORT environment variable for Cloud Run compatibility
+  const port = parseInt(process.env.PORT || '8080');
 
-console.log(`Starting server with PORT=${port} and NODE_ENV=${process.env.NODE_ENV || 'development'}`);
+  console.log(`Starting server with PORT=${port} and NODE_ENV=${process.env.NODE_ENV || 'development'}`);
 
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`⚡️ Server is running on port ${port}`);
-  console.log(`📝 API is available at http://localhost:${port}/api`);
-  console.log(`🔍 Health check is available at http://localhost:${port}/health`);
-});
-
-// Handle graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
+  // Start the server
+  const server = app.listen(port, () => {
+    console.log(`⚡️ Server is running on port ${port}`);
+    console.log(`📝 API is available at http://localhost:${port}/api`);
+    console.log(`🔍 Health check is available at http://localhost:${port}/health`);
   });
-});
 
-// Export app for testing
+  // Handle graceful shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+      console.log('HTTP server closed');
+    });
+  });
+}
+
+// Export app for testing and for Firebase Functions
 export default app; 
