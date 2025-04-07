@@ -1,4 +1,3 @@
-📄 También disponible en: [Español](README_es.md)
 
 # Atom Backend
 
