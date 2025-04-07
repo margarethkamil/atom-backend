@@ -25,25 +25,51 @@ jobs:
       - name: Build project
         run: npm run build
       
-      # Debug: List directories
-      - name: Debug - List directories
+      # Debug: List directories before copy
+      - name: Debug - List directories before
         run: |
-          echo "Current directory structure:"
+          echo "Root directory structure:"
           ls -la
           echo "Contents of dist folder:"
           ls -la dist || echo "dist folder not found"
+          echo "Contents of src folder:"
+          ls -la src || echo "src folder not found"
+          echo "Contents of functions folder:"
+          ls -la functions || echo "functions folder not found"
       
       # Install dependencies for functions
       - name: Install functions dependencies
         run: cd functions && npm ci
       
-      # Copy dist folder to functions directory
+      # Copy dist folder to functions directory - More explicit with debugging
       - name: Copy dist to functions
         run: |
+          echo "Creating functions/dist directory..."
           mkdir -p functions/dist
-          cp -r dist/* functions/dist/
+          
+          echo "Copying files from dist to functions/dist..."
+          cp -rv dist/* functions/dist/
+          
           echo "Contents of functions/dist after copy:"
           ls -la functions/dist || echo "functions/dist folder not found"
+          
+          echo "Checking for server.js specifically:"
+          if [ -f "functions/dist/server.js" ]; then
+            echo "server.js exists in functions/dist/"
+            echo "First few lines of server.js:"
+            head -n 20 functions/dist/server.js
+          else
+            echo "ERROR: server.js NOT FOUND in functions/dist/"
+          fi
+      
+      # Verify server.js for require.main check
+      - name: Check server.js file
+        run: |
+          echo "Checking for require.main in server.js:"
+          grep -n "require.main === module" functions/dist/server.js || echo "require.main check not found!"
+          
+          echo "Checking for default export in server.js:"
+          grep -n "exports.default" functions/dist/server.js || echo "default export not found!"
       
       # Deploy functions FIRST (requires separate token)
       - name: Setup for Functions Deploy
@@ -53,6 +79,7 @@ jobs:
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ATOM_BACKEND_396E7 }}
           PROJECT_PATH: .
+          NODE_ENV: production
       
       # Deploy hosting with Firebase Action AFTER functions are deployed
       - name: Deploy Hosting

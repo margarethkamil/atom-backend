@@ -55,13 +55,16 @@ app.get('/', (req, res) => {
 // Global error handler
 app.use(errorMiddleware);
 
+// Export the Express app - both for ESM and CommonJS compatibility
+export default app;
+module.exports = Object.assign(exports.default || {}, { default: app });
+
 // ==========================================
-// START SERVER ONLY IF NOT IN FIREBASE FUNCTIONS
+// Start server (only if this file is executed directly)
 // ==========================================
 
-// Check if this is being run directly (not imported by Firebase Functions)
-// process.env.FUNCTION_NAME is set in Firebase Functions environment
-if (!process.env.FUNCTION_NAME && process.env.NODE_ENV !== 'test') {
+// This code will only run if server.ts (or compiled server.js) is the entry point
+if (require.main === module) {
   // ALWAYS use the PORT environment variable for Cloud Run compatibility
   const port = parseInt(process.env.PORT || '8080');
 
@@ -81,7 +84,4 @@ if (!process.env.FUNCTION_NAME && process.env.NODE_ENV !== 'test') {
       console.log('HTTP server closed');
     });
   });
-}
-
-// Export app for testing and for Firebase Functions
-export default app; 
+} 
